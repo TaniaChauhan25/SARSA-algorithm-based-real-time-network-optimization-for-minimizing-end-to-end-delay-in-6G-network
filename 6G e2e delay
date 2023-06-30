@@ -1,0 +1,49 @@
+import numpy as np
+import pandas as pd
+
+# Define simulation parameters
+num_devices = 100  # Number of devices in the network
+num_steps = 1000  # Number of simulation steps
+thz_bandwidth = 100  # Available THz bandwidth in GHz
+intelligence_level = 0.8  # Level of intelligence in the network (0 to 1)
+mimo_antennas = 64  # Number of antennas in the massive MIMO system
+
+# Initialize network variables
+bandwidth_per_device = thz_bandwidth / num_devices
+device_locations = np.random.rand(num_devices, 2)  # Randomly assign locations to devices
+
+# Initialize the dataset
+data = []
+
+# Simulation loop
+for step in range(num_steps):
+    # Perform network operations for each device
+    for device_id in range(num_devices):
+        device_location = device_locations[device_id]
+        
+        # Perform intelligent operations based on the intelligence level
+        if np.random.uniform() < intelligence_level:
+            
+            # Dynamic spectrum access
+            available_bandwidth = np.random.uniform(0, bandwidth_per_device)
+            
+            # Massive MIMO operation
+            signal_strength = np.random.normal(0, 1)
+            mimo_gain = signal_strength * mimo_antennas
+        
+        # Calculate end-to-end delay for the device
+        end_to_end_delay = np.random.uniform(0, 10)  # Placeholder value, replace with actual calculation
+        
+        # Store the data in the dataset
+        data.append({
+            "Device ID": device_id,
+            "Location X": device_location[0],
+            "Location Y": device_location[1],
+            "End-to-End Delay": end_to_end_delay,
+        })
+
+# Save the dataset to a CSV file
+df = pd.DataFrame(data)
+df.to_csv("new e2e.csv", index=False)
+
+print("Simulation completed.")
