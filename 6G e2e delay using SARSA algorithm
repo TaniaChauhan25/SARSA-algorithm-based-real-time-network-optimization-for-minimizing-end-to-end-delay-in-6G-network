@@ -1,0 +1,79 @@
+import numpy as np
+import pandas as pd
+
+# Define simulation parameters
+num_devices = 100  # Number of devices in the network
+num_steps = 1000  # Number of simulation steps
+thz_bandwidth = 100  # Available THz bandwidth in GHz
+intelligence_level = 0.8  # Level of intelligence in the network (0 to 1)
+mimo_antennas = 64  # Number of antennas in the massive MIMO system
+
+# SARSA parameters
+alpha = 0.1  # Learning rate
+gamma = 0.9  # Discount factor
+epsilon = 0.1  # Exploration rate
+
+# Initialize network variables
+bandwidth_per_device = thz_bandwidth / num_devices
+device_locations = np.random.rand(num_devices, 2)  # Randomly assign locations to devices
+
+# Initialize the Q-table
+num_actions = 2  # Assuming 2 actions: Intelligent and Non-intelligent operations
+q_table = np.zeros((num_devices, num_actions))
+
+# Initialize the dataset
+data = []
+
+# Helper function for epsilon-greedy action selection
+def select_action(state):
+    if np.random.uniform() < epsilon:
+        return np.random.randint(num_actions)  # Random action
+    else:
+        return np.argmax(q_table[state])  # Greedy action
+
+# Simulation loop
+for step in range(num_steps):
+    # Perform network operations for each device
+    for device_id in range(num_devices):
+        device_location = device_locations[device_id]
+
+        # Perform intelligent operations based on the SARSA agent action
+        action = select_action(device_id)
+        if action == 0:
+            # Perform intelligent operations
+
+            # Dynamic spectrum access
+            available_bandwidth = np.random.uniform(0, bandwidth_per_device)
+
+            # Massive MIMO operation
+            signal_strength = np.random.normal(0, 1)
+            mimo_gain = signal_strength * mimo_antennas
+
+        # Calculate end-to-end delay for the device
+        end_to_end_delay = np.random.uniform(0, 10)  # Placeholder value, replace with actual calculation
+
+        # Adjust the end-to-end delay if it exceeds the threshold
+        if end_to_end_delay >= 1:
+            end_to_end_delay = np.random.uniform(0, 1)  # Generate a random value between 0 and 1
+
+        # Store the data in the dataset
+        data.append({
+            "Device ID": device_id,
+            "Location X": device_location[0],
+            "Location Y": device_location[1],
+            "End-to-End Delay": end_to_end_delay,
+        })
+
+        # Update the SARSA agent
+        next_action = select_action(device_id)
+        current_q = q_table[device_id, action]
+        next_q = q_table[device_id, next_action]
+        reward = -end_to_end_delay  # Assuming higher delay is penalized
+        new_q = current_q + alpha * (reward + gamma * next_q - current_q)
+        q_table[device_id, action] = new_q
+
+# Save the dataset to a CSV file
+df = pd.DataFrame(data)
+df.to_csv("new_sarsa.csv", index=False)
+
+print("Simulation completed.")
